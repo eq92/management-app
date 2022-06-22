@@ -3,24 +3,26 @@ import { FaTrash } from 'react-icons/fa';
 import { useMutation } from '@apollo/client';
 import { DELETE_CLIENT } from '../mutations/clientMutations';
 import { GET_CLIENTS } from '../queries/clientQueries';
+import { GET_PROJECTS } from '../queries/projectQueries';
 
 export default function ClientRow({ client }) {
    const [deleteClient] = useMutation(DELETE_CLIENT, {
       variables: { id: client.id },
       // refectch would always go back making new request on any delete of client
-      // refetchQueries: [{ query: GET_CLIENTS }],
+      refetchQueries: [{ query: GET_CLIENTS }, { query: GET_PROJECTS }],
+
       // This over writes the cache with out the deleted client in it. No new request
-      update(cache, { data: { deleteClient } }) {
-         const { clients } = cache.readQuery({ query: GET_CLIENTS });
-         cache.writeQuery({
-            query: GET_CLIENTS,
-            data: {
-               clients: clients.filter(
-                  (client) => client.id !== deleteClient.id
-               ),
-            },
-         });
-      },
+      // update(cache, { data: { deleteClient } }) {
+      //    const { clients } = cache.readQuery({ query: GET_CLIENTS });
+      //    cache.writeQuery({
+      //       query: GET_CLIENTS,
+      //       data: {
+      //          clients: clients.filter(
+      //             (client) => client.id !== deleteClient.id
+      //          ),
+      //       },
+      //    });
+      // },
    });
 
    return (
